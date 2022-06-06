@@ -1,0 +1,48 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #35654D;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-section{
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.table{
+    width: 100vw;
+    display: flex;
+    justify-content: space-around;
+}
+
+.computer, .player {
+    width: 500px;
+    height: 300px;
+    text-align: center;
+    background-color: lightgrey;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.buttons button{
+    width: 100px;
+    height: 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
