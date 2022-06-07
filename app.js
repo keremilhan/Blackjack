@@ -1,19 +1,23 @@
-const computerDOM = document.querySelector('.computer p');
-const playerDOM = document.querySelector('.player p');
+const playerCardsContainer = document.querySelector('.player')
+const computerCardsContainer = document.querySelector('.computer')
 const hitButton = document.querySelector('#hit-btn');
 const stayButton = document.querySelector('#stay-btn');
+const playAgainButton = document.querySelector('#play-again-btn')
+const infoText = document.querySelector('#info-text');
+const whoseTurn = document.getElementById('whose-turn-text');
 
 window.addEventListener("DOMContentLoaded", gameStart)
 
 async function gameStart(){
     await shuffleTheDeck();
     await drawCards();
-
-    
 }
 
 let computerCardsValue = 0;
 let playerCardsValue = 0;
+let playerAceCount = 0;
+let computerAceCount = 0;
+
 
 async function shuffleTheDeck(){
     const api= await fetch("https://deckofcardsapi.com/api/deck/80v3il51t5pa/shuffle/")
@@ -28,13 +32,31 @@ async function drawCards(){
 
     checkCards(starterCards);
 
+    let cardImage1 = document.createElement('img');
+    let cardImage2 = document.createElement('img');
+    let cardImage3 = document.createElement('img');
+    let cardImage4 = document.createElement('img');
+
+    cardImage1.src = `${data.cards[0].images.png}`;
+    cardImage2.src = `${data.cards[1].images.png}`;
+    cardImage3.src = `${data.cards[2].images.png}`;
+    cardImage4.src = `${data.cards[3].images.png}`;
+
+    computerCardsContainer.appendChild(cardImage1);
+    computerCardsContainer.appendChild(cardImage2);
+    playerCardsContainer.appendChild(cardImage3);
+    playerCardsContainer.appendChild(cardImage4);
+
     computerCardsValue += parseFloat(starterCards[0]) + parseFloat(starterCards[1]); 
 
     playerCardsValue += parseFloat(starterCards[2]) + parseFloat(starterCards[3]); 
 
     winLoseCheck(computerCardsValue,playerCardsValue);
 
-    hitButton.addEventListener("click", draw)
+    hitButton.addEventListener("click", playerDraw);
+
+    stayButton.addEventListener("click", stay)
+    
 }
 
 function winLoseCheck(computerCardsValue,playerCardsValue){
@@ -43,16 +65,22 @@ function winLoseCheck(computerCardsValue,playerCardsValue){
     if(computerCardsValue > 21 || playerCardsValue > 21 ){
         if(computerCardsValue > 21){
             console.log("computer lost");
+            infoText.textContent = `You won!`
+            winLoseScreen();
         }else if(playerCardsValue > 21){
-            console.log("you lost");
+            infoText.textContent = `You lost!`
+            winLoseScreen();
         }
     }
     else if(computerCardsValue == 21 && playerCardsValue ==21 ){
-        console.log("tie. play again");
+        infoText.textContent = `Tie! Play again!`
+        winLoseScreen();
     }else if(computerCardsValue == 21){
-        console.log("computer won");
+        infoText.textContent = `You lost!`
+        winLoseScreen();
     }else if(playerCardsValue == 21){
-        console.log("you won");
+        infoText.textContent = `You won!`
+        winLoseScreen();
     }else{
         return
     }
@@ -73,22 +101,144 @@ function checkCards(array){
 }
 
 
-async function draw(){
+async function playerDraw(){
     const api= await fetch(`https://deckofcardsapi.com/api/deck/80v3il51t5pa/draw/?count=1`)
 
     const data = await api.json();
 
     console.log(data.cards[0].value);
 
-    if(data.cards[0].value == "KING" || data.cards[0].value == "QUEEN" || data.cards[0].value == "JACK" || data.cards[0].value == "ACE"){
-        data.cards[0].value = "10";
+    if(playerAceCount == 0){
+        if(data.cards[0].value == "KING" || data.cards[0].value == "QUEEN" || data.cards[0].value == "JACK"){
+            data.cards[0].value = "10";
+            playerCardsValue += parseFloat(data.cards[0].value);
+        }else if(data.cards[0].value == "ACE"){
+            if(playerCardsValue < 10){
+                data.cards[0].value = "11";
+                playerAceCount += 1
+                console.log("player ace count", playerAceCount);
+                playerCardsValue += parseFloat(data.cards[0].value);
+            }else{
+                data.cards[0].value = "1";
+                playerAceCount += 1
+                console.log("player ace count", playerAceCount);
+                playerCardsValue += parseFloat(data.cards[0].value);
+            }
+        }else{
+            playerCardsValue += parseFloat(data.cards[0].value);
+        }
+    }    
+    else if(playerAceCount > 0){
+        if(data.cards[0].value == "ACE"){
+            if(parseFloat(data.cards[0].value) + playerCardsValue > 21){
+                data.cards[0].value = "1";
+                playerAceCount += 1
+                playerCardsValue += parseFloat(data.cards[0].value) - (10*playerAceCount);
+                console.log("player ace count", playerAceCount);
+            }
+        }else{
+            console.log("player ace count", playerAceCount);
+            playerCardsValue += parseFloat(data.cards[0].value) - (10*playerAceCount)
+        }
     }
 
-    playerCardsValue += parseFloat(data.cards[0].value);
+    let cardImage = document.createElement('img');
+    cardImage.src = `${data.cards[0].images.png}`;
+    playerCardsContainer.appendChild(cardImage);
 
     console.log(playerCardsValue);
+
+    console.log("remaining afer player draw", data.remaining);
 
     winLoseCheck(computerCardsValue,playerCardsValue);
 }
 
+function winLoseScreen(){
+    stayButton.disabled = true;
+    hitButton.disabled = true;
+    playAgainButton.disabled = false;
+}
 
+playAgainButton.addEventListener("click", ()=> {
+    document.location.reload();
+})
+
+async function computerDraw(){
+    const api= await fetch(`https://deckofcardsapi.com/api/deck/80v3il51t5pa/draw/?count=1`)
+
+    const data = await api.json();
+
+    console.log(data.cards[0].value);
+
+    if(computerAceCount == 0){
+        if(data.cards[0].value == "KING" || data.cards[0].value == "QUEEN" || data.cards[0].value == "JACK"){
+            data.cards[0].value = "10";
+            computerCardsValue += parseFloat(data.cards[0].value);
+        }else if(data.cards[0].value == "ACE"){
+            if(computerCardsValue < 10){
+                data.cards[0].value = "11";
+                computerAceCount += 1
+                console.log("computer ace count", computerAceCount);
+                computerCardsValue += parseFloat(data.cards[0].value);
+            }else{
+                data.cards[0].value = "1";
+                computerAceCount += 1
+                console.log("computer ace count", computerAceCount);
+                computerCardsValue += parseFloat(data.cards[0].value);
+            }
+        }else{
+            computerCardsValue += parseFloat(data.cards[0].value);
+        }
+    }    
+    else if(computerAceCount > 0){
+        if(data.cards[0].value == "ACE"){
+            if(parseFloat(data.cards[0].value) + computerCardsValue > 21){
+                data.cards[0].value = "1";
+                computerAceCount += 1
+                computerCardsValue += parseFloat(data.cards[0].value) - (10*computerAceCount);
+                console.log("computer ace count", computerAceCount);
+            }
+        }else{
+            console.log("computer ace count", computerAceCount);
+            computerCardsValue += parseFloat(data.cards[0].value) - (10*computerAceCount)
+        }
+    }
+
+
+    let cardImage = document.createElement('img');
+    cardImage.src = `${data.cards[0].images.png}`;
+    computerCardsContainer.appendChild(cardImage);
+
+    console.log(computerCardsValue);
+
+    console.log("remaining afer compdraw", data.remaining);
+
+    winLoseCheck(computerCardsValue,playerCardsValue)
+}
+
+async function stay(){
+    whoseTurn.textContent = `Computer turn`;
+    stayButton.disabled = true;
+    hitButton.disabled = true;
+
+    if(computerCardsValue > playerCardsValue){
+        computerCardsValue = 21;
+        winLoseCheck(computerCardsValue,playerCardsValue)
+    }else if(computerCardsValue == playerCardsValue && computerCardsValue >= 15){
+        infoText.textContent = `Tie! Play again!`
+        winLoseScreen();
+    }else if(computerCardsValue <= playerCardsValue){
+        while(computerCardsValue <= playerCardsValue){
+            await computerDraw();
+            if(computerCardsValue > playerCardsValue && computerCardsValue <= 21){
+                computerCardsValue = 21;
+                winLoseCheck(computerCardsValue,playerCardsValue)
+                break
+            }else if(computerCardsValue == playerCardsValue && computerCardsValue >= 15){
+                infoText.textContent = `Tie! Play again!`
+                winLoseScreen();
+                break
+            }
+        }
+    }
+}
