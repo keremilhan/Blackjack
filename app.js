@@ -102,8 +102,10 @@ function checkCards(array){
                 array[2] = "11";
                 array[3] = "1";
             }else if(array.indexOf("ACE") == 0 || (array.indexOf("ACE") == 1)){
+                array[(array.indexOf("ACE"))] = "11"
                 computerAceCount += 1
             }else if(array.indexOf("ACE") == 2 || array.indexOf("ACE") == 3) {
+                array[(array.indexOf("ACE"))] = "11"
                 playerAceCount += 1
             }
         }else if(array.includes("QUEEN")){
@@ -131,10 +133,7 @@ async function playerDraw(){
             if(playerCardsValue > 21){
                 playerCardsValue -= 10;
             }else{
-                data.cards[0].value = "11";
                 playerAceCount += 1
-                console.log("player ace count", playerAceCount);
-                playerCardsValue += parseFloat(data.cards[0].value);
             }
         }else{
             playerCardsValue += parseFloat(data.cards[0].value);
