@@ -93,13 +93,24 @@ function checkCards(array){
         }else if(array.includes("KING")){
             array[(array.indexOf("KING"))] = "10";
         }else if(array.includes("ACE")){
-            array[(array.indexOf("ACE"))] = "11";
+            if(array.indexOf("ACE") == 0 && (array.indexOf("ACE") == 1)){
+                computerAceCount += 1
+                array[0] = "11";
+                array[1] = "1";
+            }else if(array.indexOf("ACE") == 2 && (array.indexOf("ACE") == 3)){
+                playerAceCount += 1
+                array[2] = "11";
+                array[3] = "1";
+            }else if(array.indexOf("ACE") == 0 || (array.indexOf("ACE") == 1)){
+                computerAceCount += 1
+            }else if(array.indexOf("ACE") == 2 || array.indexOf("ACE") == 3) {
+                playerAceCount += 1
+            }
         }else if(array.includes("QUEEN")){
             array[(array.indexOf("QUEEN"))] = "10";
         }
     }
 }
-
 
 async function playerDraw(){
     const api= await fetch(`https://deckofcardsapi.com/api/deck/80v3il51t5pa/draw/?count=1`)
@@ -108,18 +119,19 @@ async function playerDraw(){
 
     console.log(data.cards[0].value);
 
+    console.log("player ace count", playerAceCount);
+
     if(playerAceCount == 0){
         if(data.cards[0].value == "KING" || data.cards[0].value == "QUEEN" || data.cards[0].value == "JACK"){
             data.cards[0].value = "10";
             playerCardsValue += parseFloat(data.cards[0].value);
         }else if(data.cards[0].value == "ACE"){
-            if(playerCardsValue < 10){
-                data.cards[0].value = "11";
-                playerAceCount += 1
-                console.log("player ace count", playerAceCount);
-                playerCardsValue += parseFloat(data.cards[0].value);
+            data.cards[0].value = "11";
+            playerCardsValue += parseFloat(data.cards[0].value);
+            if(playerCardsValue > 21){
+                playerCardsValue -= 10;
             }else{
-                data.cards[0].value = "1";
+                data.cards[0].value = "11";
                 playerAceCount += 1
                 console.log("player ace count", playerAceCount);
                 playerCardsValue += parseFloat(data.cards[0].value);
@@ -127,19 +139,28 @@ async function playerDraw(){
         }else{
             playerCardsValue += parseFloat(data.cards[0].value);
         }
-    }    
-    else if(playerAceCount > 0){
-        if(data.cards[0].value == "ACE"){
+    }else if(playerAceCount == 1){
+        if(data.cards[0].value == "KING" || data.cards[0].value == "QUEEN" || data.cards[0].value == "JACK"){
+            data.cards[0].value = "10";
+            playerCardsValue += parseFloat(data.cards[0].value);
+            if(playerCardsValue > 21){
+                playerCardsValue -= 10;
+                playerAceCount -= 1;
+            }
+        }else if(data.cards[0].value == "ACE"){
             if(parseFloat(data.cards[0].value) + playerCardsValue > 21){
                 data.cards[0].value = "1";
-                playerAceCount += 1
-                playerCardsValue += parseFloat(data.cards[0].value) - (10*playerAceCount);
+                playerCardsValue += parseFloat(data.cards[0].value);
                 console.log("player ace count", playerAceCount);
             }
         }else{
             console.log("player ace count", playerAceCount);
-            playerCardsValue += parseFloat(data.cards[0].value) - (10*playerAceCount)
+            playerCardsValue += parseFloat(data.cards[0].value);
+            playerCardsValue -= 10;
+            playerAceCount -= 1;
         }
+    }else{
+        console.log("bir sıkıntı var");
     }
 
     let cardImage = document.createElement('img');
@@ -170,6 +191,8 @@ async function computerDraw(){
 
     console.log(data.cards[0].value);
 
+    console.log("computer ace count", computerAceCount);
+
     if(computerAceCount == 0){
         if(data.cards[0].value == "KING" || data.cards[0].value == "QUEEN" || data.cards[0].value == "JACK"){
             data.cards[0].value = "10";
@@ -189,18 +212,25 @@ async function computerDraw(){
         }else{
             computerCardsValue += parseFloat(data.cards[0].value);
         }
-    }    
-    else if(computerAceCount > 0){
-        if(data.cards[0].value == "ACE"){
+    }else if(computerAceCount > 0){
+        if(data.cards[0].value == "KING" || data.cards[0].value == "QUEEN" || data.cards[0].value == "JACK"){
+            data.cards[0].value = "10";
+            computerCardsValue += parseFloat(data.cards[0].value);
+            if(computerCardsValue > 21){
+                computerCardsValue -= 10;
+                computerAceCount -= 1;
+            }
+        }else if(data.cards[0].value == "ACE"){
             if(parseFloat(data.cards[0].value) + computerCardsValue > 21){
                 data.cards[0].value = "1";
-                computerAceCount += 1
-                computerCardsValue += parseFloat(data.cards[0].value) - (10*computerAceCount);
+                computerCardsValue += parseFloat(data.cards[0].value);
                 console.log("computer ace count", computerAceCount);
             }
         }else{
             console.log("computer ace count", computerAceCount);
-            computerCardsValue += parseFloat(data.cards[0].value) - (10*computerAceCount)
+            computerCardsValue += parseFloat(data.cards[0].value);
+            computerCardsValue -= 10;
+            computerAceCount -= 1;
         }
     }
 
