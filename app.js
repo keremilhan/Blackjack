@@ -73,7 +73,7 @@ function winLoseCheck(computerCardsValue,playerCardsValue){
 }
 
 async function playerDraw(){
-    const api= await fetch(`https://deckofcardsapi.com/api/deck/80v3il51t5pa/draw/?count=1`)
+    const api= await fetch(`https://deckofcardsapi.com/api/deck/c7pqt2boam12/draw/?count=1`)
 
     const data = await api.json();
 
@@ -142,7 +142,7 @@ playAgainButton.addEventListener("click", ()=> {
 })
 
 async function computerDraw(){
-    const api= await fetch(`https://deckofcardsapi.com/api/deck/80v3il51t5pa/draw/?count=1`)
+    const api= await fetch(`https://deckofcardsapi.com/api/deck/c7pqt2boam12/draw/?count=1`)
 
     const data = await api.json();
 
