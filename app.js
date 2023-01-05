@@ -20,7 +20,9 @@ let computerAceCount = 0;
 
 
 async function shuffleTheDeck(){
-    const api= await fetch("https://deckofcardsapi.com/api/deck/80v3il51t5pa/shuffle/")
+//     const api= await fetch("https://deckofcardsapi.com/api/deck/80v3il51t5pa/shuffle/")
+    const api= await fetch("https://deckofcardsapi.com/api/deck/c7pqt2boam12/shuffle/")
+    
 }
 
 async function drawCards(){
