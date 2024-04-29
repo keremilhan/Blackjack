@@ -20,9 +20,7 @@ let computerAceCount = 0;
 
 
 async function shuffleTheDeck(){
-//     const api= await fetch("https://deckofcardsapi.com/api/deck/80v3il51t5pa/shuffle/")
-    const api= await fetch("https://deckofcardsapi.com/api/deck/c7pqt2boam12/shuffle/")
-    
+    const api= await fetch("https://deckofcardsapi.com/api/deck/1s96qnsy9m3y/shuffle/")
 }
 
 async function drawCards(){
@@ -73,7 +71,7 @@ function winLoseCheck(computerCardsValue,playerCardsValue){
 }
 
 async function playerDraw(){
-    const api= await fetch(`https://deckofcardsapi.com/api/deck/c7pqt2boam12/draw/?count=1`)
+    const api= await fetch(`https://deckofcardsapi.com/api/deck/1s96qnsy9m3y/draw/?count=1`)
 
     const data = await api.json();
 
@@ -142,7 +140,7 @@ playAgainButton.addEventListener("click", ()=> {
 })
 
 async function computerDraw(){
-    const api= await fetch(`https://deckofcardsapi.com/api/deck/c7pqt2boam12/draw/?count=1`)
+    const api= await fetch(`https://deckofcardsapi.com/api/deck/1s96qnsy9m3y/draw/?count=1`)
 
     const data = await api.json();
 
